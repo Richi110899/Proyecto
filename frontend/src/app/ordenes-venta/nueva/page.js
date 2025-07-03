@@ -100,30 +100,12 @@ export default function NuevaOrdenVentaPage() {
   const [loading, setLoading] = useState(false);
 
   // Mensaje de éxito desaparece a los 3 segundos
-  React.useEffect(() => {
+  useEffect(() => {
     if (mensaje) {
       const timer = setTimeout(() => setMensaje("") , 3000);
       return () => clearTimeout(timer);
     }
   }, [mensaje]);
-
-  const agregarMotivo = () => {
-    if (motivo.trim() && !motivos.includes(motivo.trim())) {
-      setMotivos([...motivos, motivo.trim()]);
-      setMotivo("");
-    }
-  };
-
-  const eliminarMotivo = (m) => setMotivos(motivos.filter(x => x !== m));
-
-  const agregarSituacion = () => {
-    if (situacion.trim() && !situaciones.includes(situacion.trim())) {
-      setSituaciones([...situaciones, situacion.trim()]);
-      setSituacion("");
-    }
-  };
-
-  const eliminarSituacion = (s) => setSituaciones(situaciones.filter(x => x !== s));
 
   const handleSubmit = async (e) => {
     e.preventDefault();

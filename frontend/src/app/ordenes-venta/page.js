@@ -67,79 +67,6 @@ function DetalleModal({ orden, onClose, onEdit, onDelete, eliminando, error, men
   );
 }
 
-function EditarModal({ orden, onClose, onSave, loading }) {
-  const [form, setForm] = useState({ ...orden });
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-lg relative animate-fadeIn">
-        <button
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors duration-200"
-          onClick={onClose}
-        >
-          ×
-        </button>
-        <h2 className="text-xl font-semibold mb-6 text-gray-800 pr-8">Editar Orden de Venta</h2>
-        <form onSubmit={e => { e.preventDefault(); onSave(form); }} className="space-y-8 mt-4">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-8 gap-y-4">
-            <div>
-              <label className="block mb-1 text-sm font-medium text-blue-600">Fecha de Emisión</label>
-              <input
-                type="date"
-                name="fechaEmision"
-                value={form.fechaEmision?.slice(0,10) || ''}
-                onChange={e => setForm({ ...form, fechaEmision: e.target.value })}
-                className="h-12 w-full border-b-2 border-gray-300 text-gray-900 bg-transparent text-sm focus:outline-none focus:border-blue-600 rounded-none"
-                required
-              />
-            </div>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
-            <div>
-              <label className="block mb-1 text-sm font-medium text-blue-600">Motivo</label>
-              <textarea
-                name="Motivo"
-                value={form.Motivo}
-                onChange={e => setForm({ ...form, Motivo: e.target.value })}
-                className="h-12 w-full border-b-2 border-gray-300 text-gray-900 bg-transparent text-sm focus:outline-none focus:border-blue-600 rounded-none resize-y py-3"
-                rows={1}
-                required
-              />
-            </div>
-            <div>
-              <label className="block mb-1 text-sm font-medium text-blue-600">Situación</label>
-              <textarea
-                name="Situacion"
-                value={form.Situacion}
-                onChange={e => setForm({ ...form, Situacion: e.target.value })}
-                className="h-12 w-full border-b-2 border-gray-300 text-gray-900 bg-transparent text-sm focus:outline-none focus:border-blue-600 rounded-none resize-y py-3"
-                rows={1}
-                required
-              />
-            </div>
-          </div>
-          <div className="flex justify-end gap-3 mt-6">
-            <button
-              type="button"
-              className="px-6 py-2 rounded-xl border-2 border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition-all duration-200 text-sm font-medium shadow-sm hover:shadow-md"
-              onClick={onClose}
-              disabled={loading}
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              className="px-6 py-2 rounded-xl border-2 border-blue-600 bg-white text-blue-700 hover:bg-blue-600 hover:text-white hover:border-blue-700 transition-all duration-200 text-sm font-medium shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={loading}
-            >
-              {loading ? 'Guardando...' : 'Guardar cambios'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-}
-
 function ConfirmDeleteModal({ orden, onCancel, onConfirm, loading }) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -201,10 +128,7 @@ export default function OrdenesVentaPage() {
   const [modalError, setModalError] = useState("");
   const [eliminando, setEliminando] = useState(false);
   const [modalMensaje, setModalMensaje] = useState("");
-  const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [editando, setEditando] = useState(null);
-  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchOrdenes();
@@ -249,41 +173,6 @@ export default function OrdenesVentaPage() {
       setModalError("No se pudo cargar el detalle de la orden de venta");
     }
     setLoading(false);
-  };
-
-  const handleEdit = () => {
-    if (detalle) {
-      router.push(`/ordenes-venta/editar/${detalle.NroOrdenVta}`);
-    }
-  };
-
-  const handleSaveEdit = async (form) => {
-    setEliminando(true);
-    try {
-      const res = await fetch(`${API_ORDENES}/${form.NroOrdenVta}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form)
-      });
-      if (res.ok) {
-        setMensajeGlobal("Orden de venta actualizada exitosamente");
-        setShowEditModal(false);
-        setEditando(null);
-        setDetalle(null);
-        fetchOrdenes();
-        setTimeout(() => setMensajeGlobal(""), 3000);
-      } else {
-        setModalError("Error al actualizar la orden de venta");
-      }
-    } catch {
-      setModalError("Error al actualizar la orden de venta");
-    }
-    setEliminando(false);
-  };
-
-  const handleCancelEdit = () => {
-    setShowEditModal(false);
-    setEditando(null);
   };
 
   const handleDelete = () => {
@@ -365,7 +254,7 @@ export default function OrdenesVentaPage() {
         <DetalleModal
           orden={detalle}
           onClose={() => setDetalle(null)}
-          onEdit={handleEdit}
+          onEdit={() => router.push(`/ordenes-venta/editar/${detalle.NroOrdenVta}`)}
           onDelete={handleDelete}
           eliminando={eliminando}
           error={modalError}
