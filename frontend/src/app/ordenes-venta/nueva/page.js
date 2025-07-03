@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useSession, signIn } from "next-auth/react";
 
 const API_ORDENES = "http://localhost:3001/api/ordenes-venta";
 
@@ -84,6 +85,7 @@ const FloatingTextarea = ({ label, name, value, onChange, ...props }) => {
 
 export default function NuevaOrdenVentaPage() {
   const router = useRouter();
+  const { data: session } = useSession();
   // Fecha actual en formato yyyy-mm-dd
   const today = new Date();
   const yyyy = today.getFullYear();
